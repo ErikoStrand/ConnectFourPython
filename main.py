@@ -9,74 +9,55 @@ move = 350
 row_count = 7
 col_count = 6
 clock = pygame.time.Clock()
+top_row_color = (249, 255, 213)
 bg = (38, 205, 255)
-line_color = (0, 111, 255)
+hole_color = (0, 111, 255)
 red_circle = (235, 10, 10)
 yellow_circle = (205, 235, 56)
+win_color = (255, 255, 255)
 pygame.init()
 screen = pygame.display.set_mode((700, 700))
 # col, row
 board = np.zeros((col_count, row_count))
 pygame.display.set_caption("Connect 4")
-screen.fill(bg)
 
 def check_win(player):
     # h check
     for col in range(col_count - 3):
         for row in range(row_count):
             if board[col][row] == player and board[col + 1][row] == player and board[col + 2][row] == player and board[col + 3][row] == player:
-                hwinline(col, row, player)
+                hwinline(col, row)
                 return True
     # v check
     for col in range(col_count):
         for row in range(row_count - 3):
             if board[col][row] == player and board[col][row + 1] == player and board[col][row + 2] == player and board[col][row + 3] == player:
-                vwinline(col, row, player)
+                vwinline(col, row)
                 return True
     # pos slope
     for col in range(col_count - 3):
         for row in range(row_count - 3):
             if board[col][row] == player and board[col + 1][row + 1] == player and board[col + 2][row + 2] == player and board[col + 3][row + 3] == player:
-                poswinline(col, row, player)
+                poswinline(col, row)
                 return True
     # neg slope
     for col in range(col_count - 3):
         for row in range(row_count):
             if board[col][row] == player and board[col + 1][row - 1] == player and board[col + 2][row - 2] == player and board[col + 3][row - 3] == player:
-                negwinline(col, row, player)
+                negwinline(col, row)
                 return True
 
-def hwinline(col, row, player):
-    if player == 1:
-        color = red_circle
-    elif player == 2:
-        color = yellow_circle
-    pygame.draw.line(screen, color, (row * 100 + 50, col * 100 + 100), (row * 100 + 50, col * 100 + 500), 15)
+def hwinline(col, row):
+    pygame.draw.line(screen, win_color, (row * 100 + 50, col * 100 + 100), (row * 100 + 50, col * 100 + 500), 15)
 
-def vwinline(col, row, player):
-    if player == 1:
-        color = red_circle
-    elif player == 2:
-        color = yellow_circle
-    pygame.draw.line(screen, color, (row * 100, col * 100 + 150), (row * 100 + 400, col * 100 + 150), 15)
+def vwinline(col, row):
+    pygame.draw.line(screen, win_color, (row * 100, col * 100 + 150), (row * 100 + 400, col * 100 + 150), 15)
 
-def negwinline(col, row, player):
-    if player == 1:
-        color = red_circle
-    elif player == 2:
-        color = yellow_circle
-    print(col, row)
-    print("col", "row")
-    pygame.draw.line(screen, color, (row * 100 + 100, col * 100 + 100), (row * 100 - 300, col * 100 + 500), 15)
+def negwinline(col, row):
+    pygame.draw.line(screen, win_color, (row * 100 + 100, col * 100 + 100), (row * 100 - 300, col * 100 + 500), 15)
 
-def poswinline(col, row, player):
-    if player == 1:
-        color = red_circle
-    elif player == 2:
-        color = yellow_circle
-    print(col, row)
-    print("col", "row")
-    pygame.draw.line(screen, color, (row * 100, col * 100 + 100), (row * 100 + 400, col * 100 + 500), 15)
+def poswinline(col, row):
+    pygame.draw.line(screen, win_color, (row * 100, col * 100 + 100), (row * 100 + 400, col * 100 + 500), 15)
 
 def asquare(col, row):
     return board[col][row] == 0
@@ -93,9 +74,9 @@ def draw_circles():
     for col in range(6):
         for row in range(7):
             if board[col][row] == 1:
-                pygame.draw.circle(screen, red_circle, (row * 100 + 50, col * 100 + 150), 40, 10)
+                pygame.draw.circle(screen, red_circle, (row * 100 + 50, col * 100 + 150), 40)
             if board[col][row] == 2:
-                pygame.draw.circle(screen, yellow_circle, (row * 100 + 50, col * 100 + 150), 40, 10)
+                pygame.draw.circle(screen, yellow_circle, (row * 100 + 50, col * 100 + 150), 40)
 
 def move_circle():
     if player == 1:
@@ -103,14 +84,14 @@ def move_circle():
     elif player == 2:
         color = yellow_circle
 
-    pygame.draw.circle(screen, color, (move, 50), 40, 10)
+    pygame.draw.circle(screen, color, (move, 50), 40)
 
 def draw_board():
+    pygame.draw.rect(screen, bg, (0, 100, 700, 600))
     for i in range(7):
-        if i > 0:
-            pygame.draw.line(screen, line_color, (100 * i, 100), (100 * i, 700), 10)
-        if 0 < i < 6:
-            pygame.draw.line(screen, line_color, (0, 100 + 100 * i), (700, 100 + 100 * i), 10)
+        for x in range(6):
+            pygame.draw.circle(screen, hole_color, (50 + 100 * i, 150 + 100 * x), 40)
+
 
 draw_board()
 player = 1
@@ -152,7 +133,7 @@ while 1:
 
     # game movethings
     if gameover:
-        screen.fill(bg)
+        pygame.draw.rect(screen, top_row_color, (0, 0, 700, 100))
         draw_board()
         draw_circles()
         move_circle()
